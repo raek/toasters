@@ -21,10 +21,10 @@ moveToChange move dir =
     advance :: Int -> Direction -> Change
     advance s (D a) = Translation (T x y)
       where (x, y) = vec a
-            vec 0 = ( 1,  0)
-            vec 1 = ( 0,  1)
-            vec 2 = (-1,  0)
-            vec 3 = ( 0, -1)
+            vec 0 = ( s,  0)
+            vec 1 = ( 0,  s)
+            vec 2 = (-s,  0)
+            vec 3 = ( 0, -s)
 
     turn :: Int -> Change
     turn a = Rotation (R a)
