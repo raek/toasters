@@ -34,12 +34,40 @@ robot color = setColor color >> circle >> line
       vertex 0 0
       vertex 0.4 0
 
-inPose :: S.Pose -> IO () -> IO ()
-inPose (S.Pose (S.P x y) (S.D a)) action =
-  GL.preservingMatrix $ do
-    translate (f x) (f y)
-    rotate (f (90 * a))
-    action
+inPose :: S.Pose -> IO ()
+inPose (S.Pose p d) = inPosition p >> inDirection d
+
+inPosition :: S.Position -> IO ()
+inPosition (S.P x y) = translate (f x) (f y)
+
+inDirection :: S.Direction -> IO ()
+inDirection (S.D a) = rotate (f (90 * a))
+
+withPoseAndChange :: F -> S.Pose -> S.Change -> IO ()
+withPoseAndChange param (S.Pose p d) change =
+  posAct >> transAct >> dirAct >> rotAct
+  where
+    posAct = inPosition p
+    dirAct = inDirection d
+    (transAct, rotAct) = case change of
+      S.Translation t -> (withTranslation param t, return ())
+      S.Rotation r    -> (return(), withRotation param r)
+
+withTranslation :: F -> S.Translation -> IO ()
+withTranslation param (S.T dx dy) = translate (pf dx) (pf dy)
+  where
+    pf = (* param) . f
+
+withRotation :: F -> S.Rotation -> IO ()
+withRotation param (S.R da) = rotate (pf (90 * da'))
+  where
+    pf = (* param) . f
+    da' = if da >= 2
+          then da - 4
+          else da
+
+object :: IO () -> IO ()
+object = GL.preservingMatrix
 
 lineLoop :: IO () -> IO ()
 lineLoop = GL.renderPrimitive GL.LineLoop

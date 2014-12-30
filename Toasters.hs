@@ -47,10 +47,17 @@ gameStep (tick, pose, moves) = do
       (pose', moves') = if phase == 0
                         then perform pose moves
                         else (pose, moves)
-      angle = negate $ (fromIntegral phase) * 360 / (fromIntegral fps)
+      ongoingChange = moveToChange' (head moves') pose'
+      phase' = (fromIntegral phase) / (fromIntegral fps)
+      angle = negate $ phase' * 360
   grid 9 7 $ do
-    inPose (Pose (P 0 0) north) $ Graphics.rotate angle >> robot black
-    inPose pose'                $ robot green
+    object $ do
+      inPose (Pose (P 0 0) north)
+      Graphics.rotate angle
+      robot black
+    object $ do
+      withPoseAndChange phase' pose' ongoingChange
+      robot green
   return (tick + 1, pose', moves')
 
 perform :: Pose -> [Move] -> (Pose, [Move])
