@@ -32,11 +32,14 @@ moveToChange move dir =
 moveToChange' :: Move -> Pose -> Change
 moveToChange' move pose = moveToChange move (dir pose)
 
-main = graphicsLoop draw
+fps = 50
+
+main = graphicsLoop fps draw 0
 
 draw tick = do
-  let x = (tick `div` 20) `mod` 7
+  let x = (tick `div` fps) `mod` 7
   grid 9 7 $ do
     pose (Pose (P 3 3) west)  $ robot red
     pose (Pose (P 4 x) north) $ robot green
     pose (Pose (P 5 3) east)  $ robot blue
+  return (tick + 1)

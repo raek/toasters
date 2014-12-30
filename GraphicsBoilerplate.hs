@@ -6,10 +6,11 @@ import Control.Monad (when, forM_)
 import qualified Graphics as G
 import qualified Space as S
 
-graphicsLoop :: (Int -> IO ()) -> IO ()
-graphicsLoop draw = do initialize
-                       loop 0
-                       shutdown
+graphicsLoop :: Int -> (a -> IO a) -> a -> IO ()
+graphicsLoop fps step state = do
+  initialize
+  loop state
+  shutdown
   where
     initialize = do
         True <- GLFW.initialize
@@ -29,17 +30,16 @@ graphicsLoop draw = do initialize
           matrixMode $= Modelview 0
           loadIdentity
 
-    loop :: Int -> IO ()
-    loop tick = do
+    loop state = do
       clear [ColorBuffer]
       loadIdentity
-      draw tick
+      state' <- step state
       GLFW.swapBuffers
       windowOpen <- GLFW.getParam GLFW.Opened
       escPressed <- keyPressed GLFW.ESC
       let continue = windowOpen && not escPressed
-      GLFW.sleep 0.001
-      when continue $ loop $ tick + 1
+      GLFW.sleep $ 1 / fromIntegral fps
+      when continue $ loop state'
 
     keyPressed :: Enum a => a -> IO Bool
     keyPressed key = fmap (== GLFW.Press) $ GLFW.getKey key
