@@ -32,14 +32,30 @@ moveToChange move dir =
 moveToChange' :: Move -> Pose -> Change
 moveToChange' move pose = moveToChange move (dir pose)
 
+type GameState = (Int, Pose, [Move])
+
 fps = 50
 
-main = graphicsLoop fps draw 0
+main = graphicsLoop fps gameStep (1, startPose, moves)
 
-draw tick = do
-  let x = (tick `div` fps) `mod` 7
+startPose = Pose (P 4 3) north
+moves = cycle [Move1, Move1, UTurn, Move2, TurnRight, Move1, BackUp, UTurn, TurnLeft]
+
+gameStep :: GameState -> IO GameState
+gameStep (tick, pose, moves) = do
+  let (cycle, phase) = tick `divMod` fps
+      (pose', moves') = if phase == 0
+                        then perform pose moves
+                        else (pose, moves)
+      angle = negate $ (fromIntegral phase) * 360 / (fromIntegral fps)
   grid 9 7 $ do
-    pose (Pose (P 3 3) west)  $ robot red
-    pose (Pose (P 4 x) north) $ robot green
-    pose (Pose (P 5 3) east)  $ robot blue
-  return (tick + 1)
+    inPose (Pose (P 0 0) north) $ Graphics.rotate angle >> robot black
+    inPose pose'                $ robot green
+  return (tick + 1, pose', moves')
+
+perform :: Pose -> [Move] -> (Pose, [Move])
+perform pose []             = (pose, [])
+perform pose (move : moves) = (pose', moves)
+  where
+    pose'  = apply change pose
+    change = moveToChange' move pose

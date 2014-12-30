@@ -34,8 +34,8 @@ robot color = setColor color >> circle >> line
       vertex 0 0
       vertex 0.4 0
 
-pose :: S.Pose -> IO () -> IO ()
-pose (S.Pose (S.P x y) (S.D a)) action =
+inPose :: S.Pose -> IO () -> IO ()
+inPose (S.Pose (S.P x y) (S.D a)) action =
   GL.preservingMatrix $ do
     translate (f x) (f y)
     rotate (f (90 * a))
