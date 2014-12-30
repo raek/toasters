@@ -36,12 +36,4 @@ instance Show Translation where
     show (T dx dy) = "translate by (" ++ show dx ++ ", " ++ show dy ++ ")"
 
 instance Show Rotation where
-    show (R da) =
-        case da of
-          0 -> deg 0
-          1 -> deg 90
-          2 -> deg 180
-          3 -> deg 270
-          n -> "(R " ++ show n ++ ")"
-        where
-          deg x = "rotate " ++ show x ++ " dregrees ccw"
+    show (R da) = "rotate " ++ show (90 * da) ++ " degrees ccw"

@@ -7,6 +7,9 @@ import Pretty
 import GraphicsBoilerplate
 import Graphics
 
+moveToChange' :: Move -> Pose -> Change
+moveToChange' move pose = moveToChange move (dir pose)
+
 moveToChange :: Move -> Direction -> Change
 moveToChange move dir =
   case move of
@@ -17,26 +20,23 @@ moveToChange move dir =
     TurnLeft  -> turn 1
     UTurn     -> turn 2
     TurnRight -> turn 3
-  where
-    advance :: Int -> Direction -> Change
-    advance s (D a) = Translation (T x y)
-      where (x, y) = vec a
-            vec 0 = ( s,  0)
-            vec 1 = ( 0,  s)
-            vec 2 = (-s,  0)
-            vec 3 = ( 0, -s)
 
-    turn :: Int -> Change
-    turn a = Rotation (R a)
+advance :: Int -> Direction -> Change
+advance s (D a) = Translation (T x y)
+  where (x, y) = vec a
+        vec 0 = ( s,  0)
+        vec 1 = ( 0,  s)
+        vec 2 = (-s,  0)
+        vec 3 = ( 0, -s)
 
-moveToChange' :: Move -> Pose -> Change
-moveToChange' move pose = moveToChange move (dir pose)
+turn :: Int -> Change
+turn a = Rotation (R a)
 
 type GameState = (Int, Pose, [Move])
 
-fps = 50
-
 main = graphicsLoop fps gameStep (1, startPose, moves)
+
+fps = 50
 
 startPose = Pose (P 4 3) north
 moves = cycle [Move1, Move1, UTurn, Move2, TurnRight, Move1, BackUp, UTurn, TurnLeft]

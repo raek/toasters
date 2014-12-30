@@ -21,7 +21,7 @@ graphicsLoop fps step state = do
         blend      $= Enabled
         blendFunc  $= (SrcAlpha, OneMinusSrcAlpha)
         lineWidth  $= 2.0
-        clearColor $= (c 1 1 1)
+        clearColor $= Color4 1 1 1 1
         GLFW.windowSizeCallback $= \ size@(Size w h) -> do
           viewport   $= (Position 0 0, size)
           matrixMode $= Projection
@@ -47,15 +47,3 @@ graphicsLoop fps step state = do
     shutdown = do
       GLFW.closeWindow
       GLFW.terminate
-
-    c :: GLfloat -> GLfloat -> GLfloat -> Color4 GLfloat
-    c r g b = Color4 r g b 1
-
-    m :: GLfloat -> Color4 GLfloat
-    m v = Color4 v v v 1
-
-    v :: GLfloat -> GLfloat -> Vertex2 GLfloat
-    v x y = Vertex2 x y
-
-    vr :: GLfloat -> GLfloat -> Vector3 GLfloat
-    vr x y = Vector3 x y 0

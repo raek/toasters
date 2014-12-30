@@ -51,7 +51,7 @@ withPoseAndChange param (S.Pose p d) change =
     dirAct = inDirection d
     (transAct, rotAct) = case change of
       S.Translation t -> (withTranslation param t, return ())
-      S.Rotation r    -> (return(), withRotation param r)
+      S.Rotation    r -> (return (), withRotation param r)
 
 withTranslation :: F -> S.Translation -> IO ()
 withTranslation param (S.T dx dy) = translate (pf dx) (pf dy)
